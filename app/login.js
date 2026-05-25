@@ -2,25 +2,25 @@ import React, { useState } from "react";
 import {
   View,
   SafeAreaView,
-  Image,
-  Alert,
-  Text,
   TextInput,
+  Text,
   TouchableOpacity,
+  Alert,
+  Image,
+  StyleSheet,
 } from "react-native";
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Stack, useRouter } from "expo-router";
-import { COLORS, icons, SHADOWS } from "../constants";
+import { useRouter } from "expo-router";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
 
-  // ✅ LOGIN FUNCTION (FIX)
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert("Validation Error", "Please fill all fields");
+      Alert.alert("Error", "Please fill all fields");
       return;
     }
 
@@ -28,105 +28,111 @@ const Login = () => {
       const storedUser = await AsyncStorage.getItem("userDetails");
 
       if (!storedUser) {
-        Alert.alert("Error", "No user found. Please sign up first.");
+        Alert.alert("Error", "No account found");
         return;
       }
 
-      const parsed = JSON.parse(storedUser);
+      const user = JSON.parse(storedUser);
 
-      if (parsed.email === email && parsed.password === password) {
-        router.push("/home");
+      if (user.email === email && user.password === password) {
+        router.replace("/home");
       } else {
         Alert.alert("Error", "Invalid credentials");
       }
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      console.log(err);
     }
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.lightWhite }}>
-      <Stack.Screen
-        options={{
-          headerStyle: { backgroundColor: COLORS.lightWhite },
-          headerShadowVisible: false,
-          headerLeft: () => <></>,
-          headerTitle: "",
-        }}
+    <SafeAreaView style={styles.container}>
+
+      <Image
+        source={require("../assets/icons/logo.png")}
+        style={styles.logo}
       />
 
-      <View style={{ padding: 20 }}>
-        {/* ICON */}
-        <View
-          style={{
-            padding: 20,
-            marginHorizontal: "auto",
-            backgroundColor: "#f0f0f0",
-            borderRadius: 50,
-            height: 90,
-            ...SHADOWS.medium,
-          }}
-        >
-          <Image source={icons.menu} style={{ width: 50, height: 50 }} />
-        </View>
+      <Text style={styles.title}>Welcome Back</Text>
 
-        {/* FORM */}
-        <View style={{ marginTop: 20 }}>
-          <TextInput
-            value={email}
-            onChangeText={setEmail}
-            placeholder="Email"
-            style={{
-              borderWidth: 1,
-              borderColor: "#ccc",
-              padding: 10,
-              marginBottom: 10,
-            }}
-          />
+      <TextInput
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
+        style={styles.input}
+      />
 
-          <TextInput
-            value={password}
-            onChangeText={setPassword}
-            placeholder="Password"
-            secureTextEntry
-            style={{
-              borderWidth: 1,
-              borderColor: "#ccc",
-              padding: 10,
-              marginBottom: 10,
-            }}
-          />
+      <TextInput
+        placeholder="Password"
+        value={password}
+        secureTextEntry
+        onChangeText={setPassword}
+        style={styles.input}
+      />
 
-          <TouchableOpacity
-            onPress={handleLogin}
-            style={{
-              backgroundColor: COLORS.primary,
-              padding: 15,
-              alignItems: "center",
-            }}
-          >
-            <Text style={{ color: "white", fontWeight: "bold" }}>
-              Login
-            </Text>
-          </TouchableOpacity>
-        </View>
+      <TouchableOpacity style={styles.button} onPress={handleLogin}>
+        <Text style={styles.buttonText}>Login</Text>
+      </TouchableOpacity>
 
-        {/* SIGNUP LINK */}
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "center",
-            marginTop: 10,
-          }}
-        >
-          <Text>Don't have an account? </Text>
-          <TouchableOpacity onPress={() => router.push("/signup")}>
-            <Text style={{ color: "blue" }}>Sign Up</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+      <TouchableOpacity onPress={() => router.push("/signup")}>
+        <Text style={styles.link}>
+          Don't have an account? Sign Up
+        </Text>
+      </TouchableOpacity>
+
     </SafeAreaView>
   );
 };
 
 export default Login;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    padding: 25,
+    backgroundColor: "#F5F7FB",
+  },
+
+  logo: {
+    width: 100,
+    height: 100,
+    alignSelf: "center",
+    marginBottom: 20,
+    borderRadius: 25,
+  },
+
+  title: {
+    fontSize: 28,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 25,
+  },
+
+  input: {
+    backgroundColor: "white",
+    padding: 15,
+    borderRadius: 12,
+    marginBottom: 15,
+  },
+
+  button: {
+    backgroundColor: "#6C63FF",
+    padding: 15,
+    borderRadius: 12,
+    marginTop: 10,
+  },
+
+  buttonText: {
+    color: "white",
+    textAlign: "center",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+
+  link: {
+    marginTop: 20,
+    textAlign: "center",
+    color: "#6C63FF",
+    fontWeight: "600",
+  },
+});

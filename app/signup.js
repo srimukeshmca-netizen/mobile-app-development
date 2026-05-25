@@ -2,89 +2,141 @@ import React, { useState } from "react";
 import {
   View,
   SafeAreaView,
-  Image,
-  Alert,
   TextInput,
   Text,
   TouchableOpacity,
+  Alert,
+  Image,
+  StyleSheet,
 } from "react-native";
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Stack, useRouter } from "expo-router";
-import { COLORS, icons, SHADOWS } from "../constants";
+import { useRouter } from "expo-router";
 
 const Signup = () => {
   const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const router = useRouter();
 
   const handleRegister = async () => {
     if (!userName || !email || !password) {
-      Alert.alert("Error", "Fill all fields");
+      Alert.alert("Error", "Please fill all fields");
       return;
     }
 
-    const userDetails = { userName, email, password };
+    const userDetails = {
+      userName,
+      email,
+      password,
+    };
 
     await AsyncStorage.setItem(
       "userDetails",
       JSON.stringify(userDetails)
     );
 
-    Alert.alert("Success", "Account created!");
-    router.push("/login");
+    Alert.alert("Success", "Account created");
+    router.replace("/login");
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.lightWhite }}>
-      <Stack.Screen options={{ headerShown: false }} />
+    <SafeAreaView style={styles.container}>
 
-      <View style={{ padding: 20 }}>
-        <Image source={icons.menu} style={{ width: 60, height: 60 }} />
+      <Image
+        source={require("../assets/icons/logo.png")}
+        style={styles.logo}
+      />
 
-        <TextInput
-          placeholder="Username"
-          value={userName}
-          onChangeText={setUserName}
-          style={{ borderWidth: 1, marginVertical: 10, padding: 10 }}
-        />
+      <Text style={styles.title}>Create Account</Text>
 
-        <TextInput
-          placeholder="Email"
-          value={email}
-          onChangeText={setEmail}
-          style={{ borderWidth: 1, marginVertical: 10, padding: 10 }}
-        />
+      <TextInput
+        placeholder="Username"
+        value={userName}
+        onChangeText={setUserName}
+        style={styles.input}
+      />
 
-        <TextInput
-          placeholder="Password"
-          value={password}
-          secureTextEntry
-          onChangeText={setPassword}
-          style={{ borderWidth: 1, marginBottom: 10, padding: 10 }}
-        />
+      <TextInput
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
+        style={styles.input}
+      />
 
-        <TouchableOpacity
-          onPress={handleRegister}
-          style={{
-            backgroundColor: COLORS.primary,
-            padding: 15,
-            borderRadius: 5,
-          }}
-        >
-          <Text style={{ color: "#fff", textAlign: "center" }}>
-            Sign Up
-          </Text>
-        </TouchableOpacity>
+      <TextInput
+        placeholder="Password"
+        secureTextEntry
+        value={password}
+        onChangeText={setPassword}
+        style={styles.input}
+      />
 
-        <TouchableOpacity onPress={() => router.push("/login")}>
-          <Text style={{ marginTop: 10, color: "blue", textAlign: "center" }}>
-            Go to Login
-          </Text>
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity style={styles.button} onPress={handleRegister}>
+        <Text style={styles.buttonText}>Sign Up</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => router.push("/login")}>
+        <Text style={styles.link}>
+          Already have an account? Login
+        </Text>
+      </TouchableOpacity>
+
     </SafeAreaView>
   );
 };
 
 export default Signup;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    padding: 25,
+    backgroundColor: "#F5F7FB",
+  },
+
+  logo: {
+    width: 100,
+    height: 100,
+    alignSelf: "center",
+    marginBottom: 20,
+    borderRadius: 25,
+  },
+
+  title: {
+    fontSize: 28,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 25,
+  },
+
+  input: {
+    backgroundColor: "white",
+    padding: 15,
+    borderRadius: 12,
+    marginBottom: 15,
+  },
+
+  button: {
+    backgroundColor: "#6C63FF",
+    padding: 15,
+    borderRadius: 12,
+    marginTop: 10,
+  },
+
+  buttonText: {
+    color: "white",
+    textAlign: "center",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+
+  link: {
+    marginTop: 20,
+    textAlign: "center",
+    color: "#6C63FF",
+    fontWeight: "600",
+  },
+});
