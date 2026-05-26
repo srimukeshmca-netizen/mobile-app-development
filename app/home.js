@@ -201,6 +201,15 @@ export default function Home() {
         </View>
       </View>
 
+      {/* DAILY QUOTE */}
+      <View style={styles.quoteBox}>
+        <Text style={styles.quoteText}>
+          "Knowledge is of two kinds: that which is absorbed and
+          that which is heard. And that which is heard does not
+          profit if it is not absorbed."
+        </Text>
+      </View>
+
       {/* POPULAR */}
       <Text style={styles.sectionTitle}>Popular Meditations</Text>
 
@@ -209,7 +218,7 @@ export default function Home() {
         data={POPULAR_DATA}
         renderItem={renderPopularCard}
         keyExtractor={(item) => item.id}
-        showsHorizontalScrollIndicator={true}
+        showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ paddingLeft: 10, paddingRight: 20 }}
       />
 
@@ -282,6 +291,26 @@ const styles = StyleSheet.create({
     color: "#777",
     marginTop: 2,
     fontSize: 13,
+  },
+
+  quoteBox: {
+    marginTop: 18,
+    marginHorizontal: 12,
+    backgroundColor: "#F4F4F6",
+    borderWidth: 1,
+    borderColor: "#D7D7D7",
+    paddingVertical: 18,
+    paddingHorizontal: 16,
+    borderRadius: 2,
+  },
+
+  quoteText: {
+    textAlign: "center",
+    fontSize: 15,
+    lineHeight: 32,
+    color: "#1E1E1E",
+    fontStyle: "italic",
+    fontWeight: "500",
   },
 
   iconRow: {
@@ -398,4 +427,3 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
 });
-
