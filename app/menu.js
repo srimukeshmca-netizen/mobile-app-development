@@ -1,4 +1,5 @@
 import React from "react";
+
 import {
   View,
   Text,
@@ -6,16 +7,36 @@ import {
   StyleSheet,
   SafeAreaView,
   Image,
+  Switch,
 } from "react-native";
-import { Ionicons, Feather } from "@expo/vector-icons";
+
+import {
+  Ionicons,
+  Feather,
+} from "@expo/vector-icons";
+
 import { useRouter } from "expo-router";
+
+import { useTheme } from "../context/ThemeContext";
 
 export default function MenuScreen() {
   const router = useRouter();
 
+  const { theme, toggleTheme } = useTheme();
+
+  const isDarkMode = theme === "dark";
+
   return (
-    <SafeAreaView style={styles.container}>
-      
+    <SafeAreaView
+      style={[
+        styles.container,
+        {
+          backgroundColor: isDarkMode
+            ? "#111111"
+            : "#F4F4F6",
+        },
+      ]}
+    >
       {/* TOP HEADER */}
       <View style={styles.topHeader}>
         <Image
@@ -25,41 +46,102 @@ export default function MenuScreen() {
 
         <View style={styles.iconRow}>
           <TouchableOpacity
-            style={styles.iconBtn}
+            style={[
+              styles.iconBtn,
+              {
+                backgroundColor: isDarkMode
+                  ? "#1E1E1E"
+                  : "#FFFFFF",
+              },
+            ]}
             onPress={() => router.push("/home")}
           >
-            <Text style={styles.icon}>⚙️</Text>
+            <Text style={styles.icon}>🏠</Text>
           </TouchableOpacity>
         </View>
       </View>
 
       {/* TITLE */}
       <View style={styles.titleContainer}>
-        <Text style={styles.helloText}>Hello ric!</Text>
+        <Text
+          style={[
+            styles.helloText,
+            {
+              color: isDarkMode
+                ? "#BBBBBB"
+                : "#51476D",
+            },
+          ]}
+        >
+          Hello ric!
+        </Text>
 
-        <Text style={styles.mainTitle}>
+        <Text
+          style={[
+            styles.mainTitle,
+            {
+              color: isDarkMode
+                ? "#FFFFFF"
+                : "#3D315B",
+            },
+          ]}
+        >
           Would you like to change any settings?
         </Text>
       </View>
 
-      {/* SETTINGS CARD */}
-      <TouchableOpacity
-        style={styles.menuCard}
-        onPress={() => router.push("/ThemeProvider")}
+      {/* DARK MODE CARD */}
+      <View
+        style={[
+          styles.menuCard,
+          {
+            backgroundColor: isDarkMode
+              ? "#1E1E1E"
+              : "#F8F8F8",
+          },
+        ]}
       >
         <View style={styles.iconBox}>
           <Ionicons
-            name="settings-outline"
+            name="moon-outline"
             size={28}
             color="#1D1D1D"
           />
         </View>
 
-        <Text style={styles.cardText}>Settings</Text>
-      </TouchableOpacity>
+        <Text
+          style={[
+            styles.cardText,
+            {
+              color: isDarkMode
+                ? "#FFFFFF"
+                : "#43355F",
+            },
+          ]}
+        >
+          Dark Mode
+        </Text>
+
+        <View style={{ flex: 1 }} />
+
+        <Switch
+          value={isDarkMode}
+          onValueChange={toggleTheme}
+        />
+      </View>
 
       {/* FAVOURITES CARD */}
-      <TouchableOpacity style={styles.menuCard}>
+      <TouchableOpacity
+        style={[
+          styles.menuCard,
+          {
+            backgroundColor: isDarkMode
+              ? "#1E1E1E"
+              : "#F8F8F8",
+          },
+        ]}
+        onPress={() => router.push("/favourites")}
+      >
         <View style={styles.iconBox}>
           <Ionicons
             name="medal-outline"
@@ -68,11 +150,31 @@ export default function MenuScreen() {
           />
         </View>
 
-        <Text style={styles.cardText}>My Favourites</Text>
+        <Text
+          style={[
+            styles.cardText,
+            {
+              color: isDarkMode
+                ? "#FFFFFF"
+                : "#43355F",
+            },
+          ]}
+        >
+          My Favourites
+        </Text>
       </TouchableOpacity>
 
       {/* REMINDER CARD */}
-      <TouchableOpacity style={styles.menuCard}>
+      <TouchableOpacity
+        style={[
+          styles.menuCard,
+          {
+            backgroundColor: isDarkMode
+              ? "#1E1E1E"
+              : "#F8F8F8",
+          },
+        ]}
+      >
         <View style={styles.iconBox}>
           <Feather
             name="clock"
@@ -81,10 +183,21 @@ export default function MenuScreen() {
           />
         </View>
 
-        <Text style={styles.cardText}>Daily Reminders</Text>
+        <Text
+          style={[
+            styles.cardText,
+            {
+              color: isDarkMode
+                ? "#FFFFFF"
+                : "#43355F",
+            },
+          ]}
+        >
+          Daily Reminders
+        </Text>
       </TouchableOpacity>
 
-      {/* LOGOUT BUTTON */}
+      {/* LOGOUT */}
       <TouchableOpacity style={styles.logoutBtn}>
         <View style={styles.logoutIconBox}>
           <Ionicons
@@ -94,7 +207,9 @@ export default function MenuScreen() {
           />
         </View>
 
-        <Text style={styles.logoutText}>Logout</Text>
+        <Text style={styles.logoutText}>
+          Logout
+        </Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
@@ -103,7 +218,6 @@ export default function MenuScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F4F4F6",
     paddingTop: 10,
   },
 
@@ -120,6 +234,18 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
 
+  iconBtn: {
+    width: 42,
+    height: 42,
+    borderRadius: 12,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  icon: {
+    fontSize: 18,
+  },
+
   titleContainer: {
     marginTop: 25,
     paddingHorizontal: 12,
@@ -127,7 +253,6 @@ const styles = StyleSheet.create({
 
   helloText: {
     fontSize: 16,
-    color: "#51476D",
     marginBottom: 4,
   },
 
@@ -135,12 +260,10 @@ const styles = StyleSheet.create({
     fontSize: 22,
     lineHeight: 32,
     fontWeight: "700",
-    color: "#3D315B",
     width: "85%",
   },
 
   menuCard: {
-    backgroundColor: "#F8F8F8",
     marginTop: 18,
     marginHorizontal: 12,
     borderRadius: 14,
@@ -163,7 +286,6 @@ const styles = StyleSheet.create({
     marginLeft: 16,
     fontSize: 17,
     fontWeight: "600",
-    color: "#43355F",
   },
 
   logoutBtn: {
