@@ -1,206 +1,268 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
   FlatList,
   TouchableOpacity,
   Image,
-  Animated,
-  StyleSheet
+  StyleSheet,
+  Dimensions,
 } from "react-native";
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 
+const { width } = Dimensions.get("window");
+
+const DATA = [
+  {
+    id: "1",
+    title: "Mindful Breathing",
+    type: "Calm",
+    duration: "10 min",
+    desc: "A deep breathing session that helps reduce anxiety, calm your mind, improve focus, and bring emotional balance.",
+    image: "https://source.unsplash.com/600x600/?meditation",
+  },
+  {
+    id: "2",
+    title: "Deep Sleep",
+    type: "Sleep",
+    duration: "15 min",
+    desc: "A guided sleep meditation designed to relax your body, slow your thoughts, and help you fall into deep sleep naturally.",
+    image: "https://source.unsplash.com/600x600/?sleep",
+  },
+  {
+    id: "3",
+    title: "Focus Flow",
+    type: "Focus",
+    duration: "12 min",
+    desc: "Boost your concentration and productivity with techniques that remove distractions and improve clarity.",
+    image: "https://source.unsplash.com/600x600/?focus",
+  },
+  {
+    id: "4",
+    title: "Stress Relief",
+    type: "Relax",
+    duration: "20 min",
+    desc: "Release stress and tension with calming techniques and guided relaxation exercises for inner peace.",
+    image: "https://source.unsplash.com/600x600/?nature",
+  },
+  {
+    id: "5",
+    title: "Morning Energy",
+    type: "Energy",
+    duration: "8 min",
+    desc: "Start your day with positive energy, mindful awareness, and a refreshing mental reset.",
+    image: "https://source.unsplash.com/600x600/?sunrise",
+  },
+  {
+    id: "6",
+    title: "Body Scan",
+    type: "Awareness",
+    duration: "14 min",
+    desc: "A full-body awareness meditation that helps you relax every muscle and release tension.",
+    image: "https://source.unsplash.com/600x600/?yoga",
+  },
+  {
+    id: "7",
+    title: "Anxiety Release",
+    type: "Calm",
+    duration: "18 min",
+    desc: "Powerful guided meditation to reduce anxiety and bring emotional balance.",
+    image: "https://source.unsplash.com/600x600/?calm",
+  },
+  {
+    id: "8",
+    title: "Positive Mind",
+    type: "Mindset",
+    duration: "10 min",
+    desc: "Train your mind to think positively and build strong mental habits.",
+    image: "https://source.unsplash.com/600x600/?positivity",
+  },
+  {
+    id: "9",
+    title: "Inner Peace",
+    type: "Spiritual",
+    duration: "20 min",
+    desc: "Deep meditation for spiritual calmness and emotional healing.",
+    image: "https://source.unsplash.com/600x600/?peace",
+  },
+  {
+    id: "10",
+    title: "Sleep Journey",
+    type: "Sleep",
+    duration: "25 min",
+    desc: "Long deep sleep journey meditation for full relaxation and recovery.",
+    image: "https://source.unsplash.com/600x600/?night",
+  },
+];
+
 export default function Home() {
   const router = useRouter();
-
-  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 800,
-      useNativeDriver: true,
-    }).start();
+    AsyncStorage.getItem("userDetails").then((u) => {
+      if (u) setUser(JSON.parse(u));
+    });
   }, []);
-
-  const data = [
-    {
-      id: "1",
-      title: "Mindful Breathing",
-      type: "Calmness",
-      duration: "10 min",
-      desc: "Relax your mind with deep breathing",
-      image: "https://images.unsplash.com/photo-1506126613408-eca07ce68773"
-    },
-    {
-      id: "2",
-      title: "Focus Flow",
-      type: "Focus",
-      duration: "12 min",
-      desc: "Improve concentration",
-      image: "https://images.unsplash.com/photo-1499209974431-9dddcece7f88"
-    },
-    {
-      id: "3",
-      title: "Deep Sleep",
-      type: "Relax",
-      duration: "15 min",
-      desc: "Sleep peacefully",
-      image: "https://images.unsplash.com/photo-1519681393784-d120267933ba"
-    },
-    {
-      id: "4",
-      title: "Energy Boost",
-      type: "Energy",
-      duration: "8 min",
-      desc: "Boost your energy",
-      image: "https://images.unsplash.com/photo-1501785888041-af3ef285b470"
-    },
-    {
-      id: "5",
-      title: "Stress Relief",
-      type: "Relax",
-      duration: "20 min",
-      desc: "Reduce stress",
-      image: "https://images.unsplash.com/photo-1470770841072-f978cf4d019e"
-    }
-  ];
 
   const logout = async () => {
     await AsyncStorage.removeItem("userDetails");
     router.replace("/login");
   };
 
-  const renderItem = ({ item, index }) => {
-    const scaleAnim = new Animated.Value(0.9);
+  const Card = ({ item }) => (
+    <TouchableOpacity
+      onPress={() => router.push({ pathname: "/details", params: item })}
+      style={styles.card}
+      activeOpacity={0.9}
+    >
+      <Image source={{ uri: item.image }} style={styles.image} />
 
-    Animated.timing(scaleAnim, {
-      toValue: 1,
-      duration: 400 + index * 100,
-      useNativeDriver: true,
-    }).start();
+      <View style={styles.cardContent}>
+        <Text style={styles.title}>{item.title}</Text>
+        <Text style={styles.meta}>
+          {item.type} • {item.duration}
+        </Text>
 
-    return (
-      <Animated.View style={[styles.card, { transform: [{ scale: scaleAnim }] }]}>
-        <TouchableOpacity
-          onPress={() =>
-            router.push({ pathname: "/details", params: item })
-          }
-        >
-          <Image source={{ uri: item.image }} style={styles.image} />
+        <Text style={styles.desc} numberOfLines={5}>
+          {item.desc}
+        </Text>
 
-          <Text style={styles.title}>{item.title}</Text>
-          <Text style={styles.sub}>{item.type}</Text>
-          <Text style={styles.time}>{item.duration}</Text>
+        <TouchableOpacity style={styles.button}>
+          <Text style={styles.buttonText}>Start Session</Text>
         </TouchableOpacity>
-      </Animated.View>
-    );
-  };
+      </View>
+    </TouchableOpacity>
+  );
 
   return (
-    <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
-      
+    <View style={styles.container}>
       {/* HEADER */}
       <View style={styles.header}>
         <View>
-          <Text style={styles.hi}>Hello Sri Mukesh B 👋</Text>
-          <Text style={styles.subtitle}>Find your perfect meditation</Text>
+          <Text style={styles.hi}>Hello 👋 {user?.userName || "Mukesh"}</Text>
+          <Text style={styles.subtitle}>
+            Find your perfect meditation
+          </Text>
         </View>
 
-        <TouchableOpacity onPress={logout}>
-          <Text style={styles.logout}>Logout</Text>
-        </TouchableOpacity>
+        <View style={styles.icons}>
+          <TouchableOpacity onPress={() => router.push("/settings")}>
+            <Text style={styles.icon}>⚙️</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={logout}>
+            <Text style={styles.icon}>🚪</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
-      {/* LIST */}
-      <Text style={styles.section}>Popular Meditations</Text>
+      {/* SECTION */}
+      <Text style={styles.section}>Recommended Meditations</Text>
 
+      {/* HORIZONTAL LIST */}
       <FlatList
-        data={data}
+        data={DATA}
         horizontal
         showsHorizontalScrollIndicator={false}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(i) => i.id}
+        renderItem={Card}
+        contentContainerStyle={{ paddingHorizontal: 15 }}
       />
-
-      <Text style={styles.section}>Daily Meditations</Text>
-
-      <FlatList
-        data={data.slice(2)}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id + "d"}
-      />
-
-    </Animated.View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F4F6FB",
-    padding: 15
+    backgroundColor: "#F6F7FB",
+    paddingTop: 50,
   },
 
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
+    paddingHorizontal: 15,
     alignItems: "center",
-    marginBottom: 10
   },
 
   hi: {
-    fontSize: 22,
-    fontWeight: "bold"
+    fontSize: 24,
+    fontWeight: "bold",
   },
 
   subtitle: {
     color: "gray",
-    marginTop: 3
+    marginTop: 4,
   },
 
-  logout: {
-    color: "red",
-    fontWeight: "bold"
+  icons: {
+    flexDirection: "row",
+    gap: 15,
+  },
+
+  icon: {
+    fontSize: 24,
   },
 
   section: {
     fontSize: 18,
     fontWeight: "bold",
-    marginTop: 20
+    marginTop: 20,
+    marginLeft: 15,
   },
 
   card: {
+    width: width * 0.75,
     backgroundColor: "white",
-    width: 180,
-    borderRadius: 18,
-    marginRight: 12,
-    padding: 10,
-    elevation: 5
+    borderRadius: 22,
+    marginRight: 15,
+    marginTop: 15,
+    overflow: "hidden",
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 4,
   },
 
   image: {
     width: "100%",
-    height: 110,
-    borderRadius: 12
+    height: 160, },
+
+  cardContent: {
+    padding: 14,
   },
 
   title: {
-    fontSize: 15,
+    fontSize: 18,
     fontWeight: "bold",
-    marginTop: 5
   },
 
-  sub: {
-    color: "gray"
+  meta: {
+    color: "#6C63FF",
+    marginTop: 4,
+    fontWeight: "600",
   },
 
-  time: {
-    color: "#4F46E5",
-    marginTop: 5,
-    fontWeight: "600"
-  }
+  desc: {
+    color: "gray",
+    marginTop: 8,
+    lineHeight: 18,
+  },
+
+  button: {
+    marginTop: 10,
+    backgroundColor: "#6C63FF",
+    padding: 10,
+    borderRadius: 12,
+    alignItems: "center",
+  },
+
+  buttonText: {
+    color: "white",
+    fontWeight: "bold",
+  },
 });
