@@ -7,6 +7,7 @@ import {
   Image,
   StyleSheet,
   Dimensions,
+  ScrollView,
 } from "react-native";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -14,86 +15,105 @@ import { useRouter } from "expo-router";
 
 const { width } = Dimensions.get("window");
 
-const DATA = [
+const POPULAR_DATA = [
   {
     id: "1",
     title: "Mindful Breathing",
-    type: "Calm",
-    duration: "10 min",
-    desc: "A deep breathing session that helps reduce anxiety, calm your mind, improve focus, and bring emotional balance.",
-    image: "https://source.unsplash.com/600x600/?meditation",
+    target: "calmness",
+    duration: "10 minutes",
+    shortDescription:
+      "Focus on your breath and maintain a steady rhythm to clear your mind and reduce stress.",
+    image:
+      "https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=1000",
   },
   {
     id: "2",
-    title: "Deep Sleep",
-    type: "Sleep",
-    duration: "15 min",
-    desc: "A guided sleep meditation designed to relax your body, slow your thoughts, and help you fall into deep sleep naturally.",
-    image: "https://source.unsplash.com/600x600/?sleep",
+    title: "Body Scan Meditation",
+    target: "relaxation",
+    duration: "15 minutes",
+    shortDescription:
+      "Scan through each part of your body, relaxing your muscles and relieving tension.",
+    image:
+      "https://images.unsplash.com/photo-1518611012118-696072aa579a?q=80&w=1000",
   },
   {
     id: "3",
-    title: "Focus Flow",
-    type: "Focus",
-    duration: "12 min",
-    desc: "Boost your concentration and productivity with techniques that remove distractions and improve clarity.",
-    image: "https://source.unsplash.com/600x600/?focus",
+    title: "Loving-Kindness Meditation",
+    target: "compassion",
+    duration: "20 minutes",
+    shortDescription:
+      "Send thoughts of love and kindness to yourself and others to foster positive emotions.",
+    image:
+      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1000",
   },
   {
     id: "4",
-    title: "Stress Relief",
-    type: "Relax",
-    duration: "20 min",
-    desc: "Release stress and tension with calming techniques and guided relaxation exercises for inner peace.",
-    image: "https://source.unsplash.com/600x600/?nature",
+    title: "Guided Visualization",
+    target: "mental clarity",
+    duration: "12 minutes",
+    shortDescription:
+      "Visualize a peaceful scene to calm your mind and enhance focus.",
+    image:
+      "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1000",
   },
   {
     id: "5",
-    title: "Morning Energy",
-    type: "Energy",
-    duration: "8 min",
-    desc: "Start your day with positive energy, mindful awareness, and a refreshing mental reset.",
-    image: "https://source.unsplash.com/600x600/?sunrise",
+    title: "Mantra Meditation",
+    target: "inner peace",
+    duration: "10 minutes",
+    shortDescription:
+      "Repeat a calming word or phrase to quiet the mind and center yourself.",
+    image:
+      "https://images.unsplash.com/photo-1494526585095-c41746248156?q=80&w=1000",
   },
   {
     id: "6",
-    title: "Body Scan",
-    type: "Awareness",
-    duration: "14 min",
-    desc: "A full-body awareness meditation that helps you relax every muscle and release tension.",
-    image: "https://source.unsplash.com/600x600/?yoga",
+    title: "Chakra Meditation",
+    target: "energy balance",
+    duration: "25 minutes",
+    shortDescription:
+      "Focus on aligning your energy centers to achieve balance and peace.",
+    image:
+      "https://images.unsplash.com/photo-1470115636492-6d2b56f9146d?q=80&w=1000",
   },
   {
     id: "7",
-    title: "Anxiety Release",
-    type: "Calm",
-    duration: "18 min",
-    desc: "Powerful guided meditation to reduce anxiety and bring emotional balance.",
-    image: "https://source.unsplash.com/600x600/?calm",
+    title: "Walking Meditation",
+    target: "mind-body connection",
+    duration: "15 minutes",
+    shortDescription:
+      "Combine walking with mindfulness to bring awareness to movement.",
+    image:
+      "https://images.unsplash.com/photo-1508672019048-805c876b67e2?q=80&w=1000",
   },
   {
     id: "8",
-    title: "Positive Mind",
-    type: "Mindset",
-    duration: "10 min",
-    desc: "Train your mind to think positively and build strong mental habits.",
-    image: "https://source.unsplash.com/600x600/?positivity",
+    title: "Zen Meditation",
+    target: "concentration",
+    duration: "30 minutes",
+    shortDescription:
+      "Practice sitting meditation to develop concentration and insight.",
+    image:
+      "https://images.unsplash.com/photo-1500534623283-312aade485b7?q=80&w=1000",
+  },
+];
+
+const DAILY_DATA = [
+  {
+    id: "11",
+    title: "Loving-Kindness Meditation",
+    target: "calmness",
+    duration: "10 minutes",
+    image:
+      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1000",
   },
   {
-    id: "9",
-    title: "Inner Peace",
-    type: "Spiritual",
-    duration: "20 min",
-    desc: "Deep meditation for spiritual calmness and emotional healing.",
-    image: "https://source.unsplash.com/600x600/?peace",
-  },
-  {
-    id: "10",
-    title: "Sleep Journey",
-    type: "Sleep",
-    duration: "25 min",
-    desc: "Long deep sleep journey meditation for full relaxation and recovery.",
-    image: "https://source.unsplash.com/600x600/?night",
+    id: "12",
+    title: "Body Scan Meditation",
+    target: "relaxation",
+    duration: "15 minutes",
+    image:
+      "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1200",
   },
 ];
 
@@ -103,7 +123,9 @@ export default function Home() {
 
   useEffect(() => {
     AsyncStorage.getItem("userDetails").then((u) => {
-      if (u) setUser(JSON.parse(u));
+      if (u) {
+        setUser(JSON.parse(u));
+      }
     });
   }, []);
 
@@ -112,157 +134,268 @@ export default function Home() {
     router.replace("/login");
   };
 
-  const Card = ({ item }) => (
+  const renderPopularCard = ({ item }) => (
     <TouchableOpacity
-      onPress={() => router.push({ pathname: "/details", params: item })}
-      style={styles.card}
       activeOpacity={0.9}
+      style={styles.popularCard}
+      onPress={() =>
+        router.push({
+          pathname: "/details",
+          params: item,
+        })
+      }
     >
-      <Image source={{ uri: item.image }} style={styles.image} />
+      <Image source={{ uri: item.image }} style={styles.popularImage} />
 
-      <View style={styles.cardContent}>
-        <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.meta}>
-          {item.type} • {item.duration}
-        </Text>
-
-        <Text style={styles.desc} numberOfLines={5}>
-          {item.desc}
-        </Text>
-
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Start Session</Text>
-        </TouchableOpacity>
+      <View style={styles.tag}>
+        <Text style={styles.tagText}>{item.target}</Text>
       </View>
+
+      <Text numberOfLines={1} style={styles.cardTitle}>
+        {item.title}
+      </Text>
+
+      <Text numberOfLines={3} style={styles.description}>
+        {item.shortDescription}
+      </Text>
+
+      <Text style={styles.duration}>{item.duration}</Text>
     </TouchableOpacity>
   );
 
   return (
-    <View style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      showsVerticalScrollIndicator={false}
+    >
       {/* HEADER */}
       <View style={styles.header}>
-        <View>
-          <Text style={styles.hi}>Hello 👋 {user?.userName || "Mukesh"}</Text>
-          <Text style={styles.subtitle}>
-            Find your perfect meditation
-          </Text>
+        <View style={styles.logoRow}>
+          <Image
+            source={require("../assets/icons/logo.png")}
+            style={styles.logo}
+          />
+
+          <View>
+            <Text style={styles.hello}>
+              Hello {user?.userName || "Mukesh"}!
+            </Text>
+
+            <Text style={styles.subtitle}>
+              Find your perfect meditation
+            </Text>
+          </View>
         </View>
 
-        <View style={styles.icons}>
-          <TouchableOpacity onPress={() => router.push("/settings")}>
+        <View style={styles.iconRow}>
+          <TouchableOpacity
+            style={styles.iconBtn}
+            onPress={() => alert("Settings")}
+          >
             <Text style={styles.icon}>⚙️</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={logout}>
+          <TouchableOpacity style={styles.iconBtn} onPress={logout}>
             <Text style={styles.icon}>🚪</Text>
           </TouchableOpacity>
         </View>
       </View>
 
-      {/* SECTION */}
-      <Text style={styles.section}>Recommended Meditations</Text>
+      {/* POPULAR */}
+      <Text style={styles.sectionTitle}>Popular Meditations</Text>
 
-      {/* HORIZONTAL LIST */}
       <FlatList
-        data={DATA}
         horizontal
-        showsHorizontalScrollIndicator={false}
-        keyExtractor={(i) => i.id}
-        renderItem={Card}
-        contentContainerStyle={{ paddingHorizontal: 15 }}
+        data={POPULAR_DATA}
+        renderItem={renderPopularCard}
+        keyExtractor={(item) => item.id}
+        showsHorizontalScrollIndicator={true}
+        contentContainerStyle={{ paddingLeft: 10, paddingRight: 20 }}
       />
-    </View>
+
+      {/* DAILY */}
+      <Text style={styles.dailyTitle}>Daily Meditation</Text>
+
+      {DAILY_DATA.map((item) => (
+        <TouchableOpacity
+          key={item.id}
+          style={styles.dailyCard}
+          activeOpacity={0.9}
+          onPress={() =>
+            router.push({
+              pathname: "/details",
+              params: item,
+            })
+          }
+        >
+          <Image
+            source={{ uri: item.image }}
+            style={styles.dailyImage}
+          />
+
+          <View style={styles.dailyContent}>
+            <Text style={styles.dailyCardTitle}>{item.title}</Text>
+
+            <Text style={styles.dailyText}>{item.target}</Text>
+
+            <Text style={styles.dailyText}>{item.duration}</Text>
+          </View>
+        </TouchableOpacity>
+      ))}
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F6F7FB",
-    paddingTop: 50,
+    backgroundColor: "#F4F4F6",
+    paddingTop: 45,
   },
 
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingHorizontal: 15,
+    paddingHorizontal: 12,
     alignItems: "center",
   },
 
-  hi: {
-    fontSize: 24,
-    fontWeight: "bold",
+  logoRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+
+  logo: {
+    width: 30,
+    height: 30,
+    borderRadius: 10,
+  },
+
+  hello: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#1B1B1B",
   },
 
   subtitle: {
-    color: "gray",
-    marginTop: 4,
+    color: "#777",
+    marginTop: 2,
+    fontSize: 13,
   },
 
-  icons: {
+  iconRow: {
     flexDirection: "row",
-    gap: 15,
+    gap: 10,
+  },
+
+  iconBtn: {
+    backgroundColor: "#fff",
+    width: 38,
+    height: 38,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 12,
   },
 
   icon: {
-    fontSize: 24,
+    fontSize: 18,
   },
 
-  section: {
+  sectionTitle: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: "700",
     marginTop: 20,
-    marginLeft: 15,
+    marginLeft: 12,
+    marginBottom: 10,
+    color: "#222",
   },
 
-  card: {
-    width: width * 0.75,
-    backgroundColor: "white",
-    borderRadius: 22,
-    marginRight: 15,
-    marginTop: 15,
-    overflow: "hidden",
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    elevation: 4,
-  },
-
-  image: {
-    width: "100%",
-    height: 160, },
-
-  cardContent: {
-    padding: 14,
-  },
-
-  title: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-
-  meta: {
-    color: "#6C63FF",
-    marginTop: 4,
-    fontWeight: "600",
-  },
-
-  desc: {
-    color: "gray",
-    marginTop: 8,
-    lineHeight: 18,
-  },
-
-  button: {
-    marginTop: 10,
-    backgroundColor: "#6C63FF",
+  popularCard: {
+    width: width * 0.42,
+    backgroundColor: "#fff",
+    borderRadius: 18,
     padding: 10,
-    borderRadius: 12,
-    alignItems: "center",
+    marginRight: 14,
+    marginBottom: 8,
   },
 
-  buttonText: {
-    color: "white",
-    fontWeight: "bold",
+  popularImage: {
+    width: "100%",
+    height: 100,
+    borderRadius: 16,
+  },
+
+  tag: {
+    borderWidth: 1,
+    borderColor: "#DDD",
+    borderRadius: 30,
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    alignSelf: "flex-start",
+    marginTop: 10,
+  },
+
+  tagText: {
+    fontSize: 10,
+    color: "#777",
+  },
+
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    marginTop: 12,
+    color: "#222",
+  },
+
+  description: {
+    color: "#666",
+    fontSize: 11,
+    marginTop: 6,
+    lineHeight: 16,
+  },
+
+  duration: {
+    color: "#A5A5A5",
+    marginTop: 10,
+    fontSize: 11,
+  },
+
+  dailyTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    marginTop: 25,
+    marginLeft: 12,
+    marginBottom: 15,
+  },
+
+  dailyCard: {
+    backgroundColor: "#fff",
+    marginHorizontal: 12,
+    borderRadius: 18,
+    overflow: "hidden",
+    marginBottom: 18,
+  },
+
+  dailyImage: {
+    width: "100%",
+    height: 120,
+  },
+
+  dailyContent: {
+    padding: 12,
+  },
+
+  dailyCardTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#222",
+  },
+
+  dailyText: {
+    color: "#777",
+    marginTop: 4,
+    fontSize: 13,
   },
 });
+
