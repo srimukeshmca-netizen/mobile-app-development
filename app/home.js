@@ -190,7 +190,7 @@ export default function Home() {
         <View style={styles.iconRow}>
           <TouchableOpacity
             style={styles.iconBtn}
-            onPress={() => alert("Settings")}
+            onPress={() => router.push("/menu")}
           >
             <Text style={styles.icon}>⚙️</Text>
           </TouchableOpacity>
@@ -427,3 +427,4 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
 });
+
