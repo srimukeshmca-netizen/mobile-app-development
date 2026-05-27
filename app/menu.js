@@ -174,6 +174,7 @@ export default function MenuScreen() {
               : "#F8F8F8",
           },
         ]}
+        onPress={() => router.push("/DailyReminders")}
       >
         <View style={styles.iconBox}>
           <Feather
